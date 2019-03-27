@@ -11,7 +11,7 @@ ALTDIR = /var/lib/alternatives
 ALTDATADIR = /etc/alternatives
 SUBDIRS = po
 
-all: subdirs ntsysv alternatives
+all: subdirs alternatives
 
 subdirs:
 	for d in $(SUBDIRS); do \

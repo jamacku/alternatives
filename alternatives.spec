@@ -1,33 +1,18 @@
-Summary: A system tool for maintaining the /etc/rc*.d hierarchy
-Name: chkconfig
+Summary: A system tool which allowing switch between different version of software
+Name: alternatives
 Version: 1.11
 Release: 1%{?dist}
 License: GPLv2
 Group: System Environment/Base
-URL: https://github.com/fedora-sysv/chkconfig
-Source: https://github.com/fedora-sysv/chkconfig/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+URL: https://github.com/fedora-sysv/%{name}
+Source: https://github.com/fedora-sysv/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: newt-devel gettext popt-devel libselinux-devel beakerlib gcc
 Conflicts: initscripts <= 5.30-1
 Provides: alternatives = %{version}-%{release}
 
 %description
-Chkconfig is a basic system utility.  It updates and queries runlevel
-information for system services.  Chkconfig manipulates the numerous
-symbolic links in /etc/rc.d, to relieve system administrators of some 
-of the drudgery of manually editing the symbolic links.
-
-%package -n ntsysv
-Summary: A tool to set the stop/start of system services in a runlevel
-Group: System Environment/Base
-Requires: chkconfig = %{version}-%{release}
-
-%description -n ntsysv
-Ntsysv provides a simple interface for setting which system services
-are started or stopped in various runlevels (instead of directly
-manipulating the numerous symbolic links in /etc/rc.d). Unless you
-specify a runlevel or runlevels on the command line (see the man
-page), ntsysv configures the current runlevel (5 if you're using X).
+A system tool which allowing switch between different version of software.
 
 %prep
 %setup -q
@@ -42,14 +27,6 @@ make check
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT MANDIR=%{_mandir} SBINDIR=%{_sbindir} install
 
-mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
-ln -s rc.d/init.d $RPM_BUILD_ROOT/etc/init.d
-for n in 0 1 2 3 4 5 6; do
-    mkdir -p $RPM_BUILD_ROOT/etc/rc.d/rc${n}.d
-    ln -s rc.d/rc${n}.d $RPM_BUILD_ROOT/etc/rc${n}.d
-done
-mkdir -p $RPM_BUILD_ROOT/etc/chkconfig.d
-
 %find_lang %{name}
 
 %clean
@@ -60,25 +37,11 @@ rm -rf $RPM_BUILD_ROOT
 %{!?_licensedir:%global license %%doc}
 %license COPYING
 %dir /etc/alternatives
-/sbin/chkconfig
 %{_sbindir}/update-alternatives
 %{_sbindir}/alternatives
-/etc/chkconfig.d
-/etc/init.d
-/etc/rc.d
-/etc/rc.d/init.d
-/etc/rc[0-6].d
-/etc/rc.d/rc[0-6].d
 %dir /var/lib/alternatives
-%{_mandir}/*/chkconfig*
 %{_mandir}/*/update-alternatives*
 %{_mandir}/*/alternatives*
-%{_prefix}/lib/systemd/systemd-sysv-install
-
-%files -n ntsysv
-%defattr(-,root,root)
-%{_sbindir}/ntsysv
-%{_mandir}/*/ntsysv.8*
 
 %changelog
 * Mon Sep 10 2018 Lukas Nykryn <lnykryn@redhat.com> - 1.11-1
